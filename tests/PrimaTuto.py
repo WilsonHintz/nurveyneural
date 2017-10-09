@@ -27,7 +27,7 @@ model.add(Dense(1, init='uniform', activation='sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 # fit the model
-model.fit(X_train, Y_train, validation_data=(X_test, Y_test), nb_epoch=50, batch_size=5)
+model.fit(X_train, Y_train, validation_data=(X_test, Y_test), nb_epoch=500, batch_size=5)
 
 # evaluate the model
 scores = model.evaluate(X_test, Y_test)
