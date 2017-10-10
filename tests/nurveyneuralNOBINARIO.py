@@ -7,7 +7,7 @@ import numpy as np
 seed = 9
 np.random.seed(seed)
 
-# load pima indians dataset
+# load dataset
 dataset = np.loadtxt('nurveyNobinario.csv', delimiter=',')
 
 # split into input and output variables

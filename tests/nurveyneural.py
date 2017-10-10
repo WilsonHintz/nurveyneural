@@ -7,20 +7,20 @@ import numpy as np
 seed = 9
 np.random.seed(seed)
 
-# load pima indians dataset
-dataset = np.loadtxt('nurvey.csv', delimiter=',')
+# load  dataset
+dataset = np.loadtxt('nurveyNoEdad.csv', delimiter=',')
 
 # split into input and output variables
-X = dataset[:,0:24]
-Y = dataset[:,24]
+X = dataset[:,0:22]
+Y = dataset[:,23]
 
 # split the data into training (67%) and testing (33%)
 (X_train, X_test, Y_train, Y_test) = train_test_split(X, Y, test_size=0.15, random_state=seed)
 
 # create the model
 model = Sequential()
-model.add(Dense(24, input_dim=24, init='uniform', activation='relu'))
-model.add(Dense(24, init='uniform', activation='relu'))
+model.add(Dense(22, input_dim=22, init='uniform', activation='relu'))
+model.add(Dense(12, init='uniform', activation='relu'))
 model.add(Dense(8, init='uniform', activation='relu'))
 model.add(Dense(1, init='uniform', activation='sigmoid'))
 
