@@ -22,7 +22,7 @@ def create_model():
 seed = 7
 numpy.random.seed(seed)
 # load dataset
-dataset = numpy.loadtxt("nurvey.csv", delimiter=",")
+dataset = numpy.loadtxt("ConNSE(clasificado123).csv", delimiter=",")
 # split into input (X) and output (Y) variables
 X = dataset[:, 0:24]
 Y = dataset[:, 24]
