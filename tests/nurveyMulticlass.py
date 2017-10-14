@@ -1,5 +1,5 @@
 import numpy
-import pandas
+#import pandas
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.wrappers.scikit_learn import KerasClassifier
@@ -14,8 +14,9 @@ seed = 7
 numpy.random.seed(seed)
 
 # load dataset
-dataframe = pandas.read_csv("nurvey.csv", header=None)
-dataset = dataframe.values
+#dataframe = pandas.read_csv("nurvey.csv", header=None)
+#dataset = dataframe.values
+dataset = numpy.loadtxt('nurvey3600.csv', delimiter=',')
 X = dataset[:, 0:24]
 Y = dataset[:, 24]
 
@@ -36,7 +37,7 @@ def baseline_model():
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     return model
 
-estimator = KerasClassifier(build_fn=baseline_model, epochs=200, batch_size=5)
+estimator = KerasClassifier(build_fn=baseline_model, epochs=20, batch_size=5)
 kfold = KFold(n_splits=10, shuffle=True, random_state=seed)
 results = cross_val_score(estimator, X, dummy_y, cv=kfold)
 print("Baseline: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
