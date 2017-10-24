@@ -37,7 +37,10 @@ def baseline_model():
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     return model
 
-estimator = KerasClassifier(build_fn=baseline_model, epochs=20, batch_size=5)
+estimator = KerasClassifier(build_fn=baseline_model, epochs=2, batch_size=5)
 kfold = KFold(n_splits=4, shuffle=True, random_state=seed)
 results = cross_val_score(estimator, X, dummy_y, cv=kfold)
+acc = []
+acc.append(results.mean()*100)
 print("Baseline: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
+print(acc)
