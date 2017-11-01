@@ -30,12 +30,19 @@ model.add(Dense(5, activation='relu'))
 model.add(Dense(8, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-history = model.fit(X, dummy_y, validation_split=0.25, epochs=250, batch_size=7, verbose=1)
+history = model.fit(X, dummy_y, validation_split=0.25, epochs=20, batch_size=7, verbose=1)
 scores = model.evaluate(X, dummy_y, verbose=0)
 
 #impresion de resultados
 print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
+# serialize model to JSON
+model_json = model.to_json()
+with open("model.json", "w") as json_file:
+    json_file.write(model_json)
+# serialize weights to HDF5
+model.save_weights("model.h5")
+print("Saved model to disk")
 
 # list all data in history
 print(history.history.keys())
