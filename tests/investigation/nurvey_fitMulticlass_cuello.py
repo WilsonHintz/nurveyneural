@@ -12,7 +12,7 @@ numpy.random.seed(seed)
 # load dataset
 #dataframe = pandas.read_csv("nurvey.csv", header=None)
 #dataset = dataframe.values
-dataset = numpy.loadtxt('nurvey5410.csv', delimiter=';')
+dataset = numpy.loadtxt('nurvey7214.csv', delimiter=';')
 X = dataset[:, 0:24]
 Y = dataset[:, 24]
 
@@ -25,12 +25,12 @@ dummy_y = np_utils.to_categorical(encoded_Y)
 
 model = Sequential()
 model.add(Dense(24, input_dim=24, activation='relu'))
-model.add(Dense(12, activation='relu'))
-model.add(Dense(3, activation='relu'))
+model.add(Dense(10, activation='relu'))
+model.add(Dense(5,activation='relu'))
 model.add(Dense(8, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-history = model.fit(X, dummy_y, validation_split=0.30, epochs=50, batch_size=7, verbose=1)
+history = model.fit(X, dummy_y, validation_split=0.25, epochs=250, batch_size=7, verbose=1)
 
 # list all data in history
 print(history.history.keys())
