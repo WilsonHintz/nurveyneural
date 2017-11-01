@@ -12,7 +12,7 @@ numpy.random.seed(seed)
 # load dataset
 #dataframe = pandas.read_csv("nurvey.csv", header=None)
 #dataset = dataframe.values
-dataset = numpy.loadtxt('nurvey3600.csv', delimiter=',')
+dataset = numpy.loadtxt('nurvey5410.csv', delimiter=';')
 X = dataset[:, 0:24]
 Y = dataset[:, 24]
 
