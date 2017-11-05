@@ -26,11 +26,11 @@ dummy_y = np_utils.to_categorical(encoded_Y)
 model = Sequential()
 model.add(Dense(24, input_dim=24, activation='relu'))
 model.add(Dense(10, activation='relu'))
-model.add(Dense(5, activation='relu'))
+model.add(Dense(3, activation='relu'))
 model.add(Dense(8, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-history = model.fit(X, dummy_y, validation_split=0.25, epochs=20, batch_size=7, verbose=1)
+history = model.fit(X, dummy_y, validation_split=0.20, epochs=200, batch_size=5, verbose=1)
 scores = model.evaluate(X, dummy_y, verbose=0)
 
 #impresion de resultados
