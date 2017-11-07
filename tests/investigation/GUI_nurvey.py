@@ -15,8 +15,8 @@ print("Loaded model from disk")
 dataset = [2,47,0,2,2,1,1,1,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,1]
 
 
-cobertura = Gtk.CheckButton("Cobertura medica")
-subsidio = Gtk.CheckButton("Subsidio")
+cobertura = Gtk.CheckButton("Tiene Cobertura medica")
+subsidio = Gtk.CheckButton("Cobra Subsidio")
 categoria = Gtk.Label("")
 
 estado1 = Gtk.RadioButton.new_with_label_from_widget(None, "Ocupado")
@@ -50,11 +50,11 @@ educacion2 = Gtk.RadioButton.new_with_label_from_widget(educacion1, "Secundario"
 educacion3 = Gtk.RadioButton.new_with_label_from_widget(educacion1, "Universitario")
 
 edad = Gtk.Entry()
-edad.set_text("edad: 25")
+edad.set_text("25")
 Miembros = Gtk.Entry()
-Miembros.set_text("Cant. Miembros Familiares")
+Miembros.set_text("2")
 Aportantes = Gtk.Entry()
-Aportantes.set_text("Cant. Miembros Aportantes")
+Aportantes.set_text("1")
 
 
 class ListBoxRowWithData(Gtk.ListBoxRow):
@@ -67,7 +67,7 @@ class ListBoxRowWithData(Gtk.ListBoxRow):
 class ListBoxWindow(Gtk.Window):
 
     def __init__(self):
-        Gtk.Window.__init__(self, title="ListBox Demo")
+        Gtk.Window.__init__(self, title="Nivel Socio Economico")
         self.set_border_width(20)
 
         #wraper global de la ventana
@@ -90,6 +90,8 @@ class ListBoxWindow(Gtk.Window):
         row = Gtk.ListBoxRow()
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=50)
         row.add(hbox)
+        lbledad  = Gtk.Label("Edad: ")
+        hbox.pack_start(lbledad, False, False, 0)
         hbox.pack_start(edad, False, False, 0)
 
         listbox.add(row)
@@ -105,7 +107,8 @@ class ListBoxWindow(Gtk.Window):
         row = Gtk.ListBoxRow()
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=50)
         row.add(hbox)
-
+        lblMiembros = Gtk.Label("Miembros de la familia: ")
+        hbox.pack_start(lblMiembros, False, False, 0)
         hbox.pack_start(Miembros, False, False, 0)
 
         listbox.add(row)
@@ -113,7 +116,8 @@ class ListBoxWindow(Gtk.Window):
         row = Gtk.ListBoxRow()
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=50)
         row.add(hbox)
-
+        lblAportantes = Gtk.Label("Miembros Aportantes: ")
+        hbox.pack_start(lblAportantes, False, False, 0)
         hbox.pack_start(Aportantes, False, False, 0)
 
         listbox.add(row)
@@ -213,11 +217,13 @@ class ListBoxWindow(Gtk.Window):
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=50)
         row.add(hbox)
 
-        button = Gtk.Button.new_with_mnemonic("Check")
+        button = Gtk.Button.new_with_mnemonic("Calcular")
         button.connect("clicked", self.on_open_clicked)
+        lbl_nivel = Gtk.Label("Nivel socio economico: ")
 
         hbox.pack_start(button, True, True, 0)
-        hbox.pack_start(categoria, True,True,0)
+        hbox.pack_start(lbl_nivel, False, True, 0)
+        hbox.pack_start(categoria, False,False,0)
         listbox.add(row)
 
     def on_open_clicked(self, button):
@@ -365,8 +371,21 @@ class ListBoxWindow(Gtk.Window):
         print("salida:")
         print(salida)
         print("categoria")
-        categoria.set_text(str(j))
+        categoria.set_text(categoriaNSE(j))
+        print(categoriaNSE(j))
         print(j)
+
+def categoriaNSE(nivel):
+    return {
+        0: "E",
+        1: "E",
+        2: "D2",
+        3: "D1",
+        4: "C3",
+        5: "C2",
+        6: "C1",
+        7: "AB"
+    }.get(nivel,"error")
 
 
 win = ListBoxWindow()
