@@ -7,27 +7,30 @@ import numpy as np
 seed = 9
 np.random.seed(seed)
 
-# load  dataset
-dataset = np.loadtxt('dataset.csv', delimiter=',')
+# load dataset
+dataset = np.loadtxt('nurveyNobinario.csv', delimiter=',')
 
 # split into input and output variables
-X = dataset[:,0:8]
-Y = dataset[:,8]
+X = dataset[:,0:15]
+Y = dataset[:,15]
 
 # split the data into training (67%) and testing (33%)
-(X_train, X_test, Y_train, Y_test) = train_test_split(X, Y, test_size=0.33, random_state=seed)
+(X_train, X_test, Y_train, Y_test) = train_test_split(X, Y, test_size=0.15, random_state=seed)
 
 # create the model
 model = Sequential()
-model.add(Dense(8, input_dim=8, init='uniform', activation='relu'))
-model.add(Dense(4, init='uniform', activation='relu'))
+model.add(Dense(15, input_dim=15, init='uniform', activation='relu'))
+model.add(Dense(10, init='uniform', activation='relu'))
+model.add(Dense(10, init='uniform', activation='relu'))
+model.add(Dense(10, init='uniform', activation='relu'))
+model.add(Dense(8, init='uniform', activation='relu'))
 model.add(Dense(1, init='uniform', activation='sigmoid'))
 
 # compile the model
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 # fit the model
-model.fit(X_train, Y_train, validation_data=(X_test, Y_test), nb_epoch=500, batch_size=5)
+model.fit(X_train, Y_train, validation_data=(X_test, Y_test), nb_epoch=50, batch_size=5)
 
 # evaluate the model
 scores = model.evaluate(X_test, Y_test)
