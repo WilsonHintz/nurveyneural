@@ -29,7 +29,7 @@ CLIENT_SLEEP = 0.25
 
 # initialize our Flask application, Redis server, and Keras model
 app = flask.Flask(__name__)
-db = redis.StrictRedis(host="localhost", port=6379, db=0)
+db = redis.StrictRedis(host="192.168.0.140", port=6379, db=0)
 model = None
 
 
@@ -197,4 +197,4 @@ if __name__ == "__main__":
 
     # start the web server
     print("* Starting web service...")
-    app.run()
+    app.run(host='0.0.0.0', debug = False)
