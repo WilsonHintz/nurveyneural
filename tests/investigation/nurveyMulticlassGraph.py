@@ -14,8 +14,8 @@ seed = 7
 numpy.random.seed(seed)
 
 # load dataset
-#dataframe = pandas.read_csv("nurvey.csv", header=None)
-#dataset = dataframe.values
+# dataframe = pandas.read_csv("nurvey.csv", header=None)
+# dataset = dataframe.values
 dataset = numpy.loadtxt('nurvey3600.csv', delimiter=',')
 X = dataset[:, 0:24]
 Y = dataset[:, 24]
