@@ -2,7 +2,9 @@
 from keras.applications import ResNet50
 from keras.preprocessing.image import img_to_array
 from keras.applications import imagenet_utils
+from keras.models import model_from_json
 from threading import Thread
+from flask import request
 from PIL import Image
 import numpy as np
 import base64
@@ -22,14 +24,14 @@ IMAGE_CHANS = 3
 IMAGE_DTYPE = "float32"
 
 # initialize constants used for server queuing
-IMAGE_QUEUE = "image_queue"
+VECTOR_QUEUE = "vector_queue"
 BATCH_SIZE = 32
 SERVER_SLEEP = 0.25
 CLIENT_SLEEP = 0.25
 
 # initialize our Flask application, Redis server, and Keras model
 app = flask.Flask(__name__)
-db = redis.StrictRedis(host="192.168.0.140", port=6379, db=0)
+db = redis.StrictRedis(host="localhost", port=6379, db=0)
 model = None
 
 
@@ -76,42 +78,51 @@ def classify_process():
     model = ResNet50(weights="imagenet")
     print("* Model loaded")
 
+    # modelos nurvey ==========
+    json_file = open('model.json', 'r')
+    loaded_model_json = json_file.read()
+    json_file.close()
+    nurvey_model = model_from_json(loaded_model_json)
+    # load weights into new model
+    nurvey_model.load_weights("model.h5")
+    print("Loaded model from disk")
+
     # continually poll for new images to classify
     while True:
         # attempt to grab a batch of images from the database, then
         # initialize the image IDs and batch of images themselves
-        queue = db.lrange(IMAGE_QUEUE, 0, BATCH_SIZE - 1)
-        imageIDs = []
+        queue = db.lrange(VECTOR_QUEUE, 0, BATCH_SIZE - 1)
+        vectorsIDs = []
         batch = None
 
         # loop over the queue loading new data
         for q in queue:
             # deserialize the object and obtain the input image
             q = json.loads(q.decode("utf-8"))
-            image = base64_decode_image(q["image"], IMAGE_DTYPE,
-                                        (1, IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANS))
 
             # check to see if the batch list is None
             if batch is None:
-                batch = image
+                batch = q
 
             # otherwise, stack the data
             else:
-                batch = np.vstack([batch, image])
+                batch = np.vstack([batch, q])
 
             # update the list of image IDs
-            imageIDs.append(q["id"])
+            vectorsIDs.append(q["id"])
 
         # check to see if we need to process the batch
-        if len(imageIDs) > 0:
+        if len(vectorsIDs) > 0:
             # classify the batch
-            print("* Batch size: {}".format(batch.shape))
+            #print("* Batch size: {}".format(batch.shape))
+            predsNurvey = nurvey_model.predict(batch)
             preds = model.predict(batch)
             results = imagenet_utils.decode_predictions(preds)
+            print(predsNurvey)
 
             # loop over the image IDs and their corresponding set of
             # results from our model
-            for (imageID, resultSet) in zip(imageIDs, results):
+            for (imageID, resultSet) in zip(vectorsIDs, results):
                 # initialize the list of output predictions
                 output = []
 
@@ -126,7 +137,7 @@ def classify_process():
                 db.set(imageID, json.dumps(output))
 
             # remove the set of images from our queue
-            db.ltrim(IMAGE_QUEUE, len(imageIDs), -1)
+            db.ltrim(VECTOR_QUEUE, len(vectorsIDs), -1)
 
         # sleep for a small amount
         time.sleep(SERVER_SLEEP)
@@ -137,53 +148,46 @@ def predict():
     # initialize the data dictionary that will be returned from the
     # view
     data = {"success": False}
+    print(request.is_json)
+    content = request.get_json()
+    print(content)
 
     # ensure an image was properly uploaded to our endpoint
     if flask.request.method == "POST":
-        if flask.request.files.get("image"):
-            # read the image in PIL format and prepare it for
-            # classification
-            image = flask.request.files["image"].read()
-            image = Image.open(io.BytesIO(image))
-            image = prepare_image(image, (IMAGE_WIDTH, IMAGE_HEIGHT))
+        #return 'JSON posted'
+        # generate an ID for the classification then add the
+        # classification ID + image to the queue
+        k = str(uuid.uuid4())
+        d = {"id": k, "vector": content}
+        db.rpush(VECTOR_QUEUE, json.dumps(d))
 
-            # ensure our NumPy array is C-contiguous as well,
-            # otherwise we won't be able to serialize it
-            image = image.copy(order="C")
+        # keep looping until our model server returns the output
+        # predictions
+        while True:
+            # attempt to grab the output predictions
+            output = db.get(k)
 
-            # generate an ID for the classification then add the
-            # classification ID + image to the queue
-            k = str(uuid.uuid4())
-            d = {"id": k, "image": base64_encode_image(image)}
-            db.rpush(IMAGE_QUEUE, json.dumps(d))
+            # check to see if our model has classified the input
+            # image
+            if output is not None:
+                # add the output predictions to our data
+                # dictionary so we can return it to the client
+                output = output.decode("utf-8")
+                data["predictions"] = json.loads(output)
 
-            # keep looping until our model server returns the output
-            # predictions
-            while True:
-                # attempt to grab the output predictions
-                output = db.get(k)
+                # delete the result from the database and break
+                # from the polling loop
+                db.delete(k)
+                break
 
-                # check to see if our model has classified the input
-                # image
-                if output is not None:
-                    # add the output predictions to our data
-                    # dictionary so we can return it to the client
-                    output = output.decode("utf-8")
-                    data["predictions"] = json.loads(output)
+            # sleep for a small amount to give the model a chance
+            # to classify the input image
+            time.sleep(CLIENT_SLEEP)
 
-                    # delete the result from the database and break
-                    # from the polling loop
-                    db.delete(k)
-                    break
+        # indicate that the request was a success
+        data["success"] = True
 
-                # sleep for a small amount to give the model a chance
-                # to classify the input image
-                time.sleep(CLIENT_SLEEP)
-
-            # indicate that the request was a success
-            data["success"] = True
-
-            # return the data dictionary as a JSON response
+        # return the data dictionary as a JSON response
         return flask.jsonify(data)
 
 

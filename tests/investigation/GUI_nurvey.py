@@ -353,7 +353,7 @@ class ListBoxWindow(Gtk.Window):
             dataset[21] = 0
             dataset[22] = 0
 
-        #verifica cobertura vector[23]
+        #verifica cobertura vector [23]
         if (cobertura.get_active()):
             dataset[23] = 0
         else:
@@ -365,7 +365,7 @@ class ListBoxWindow(Gtk.Window):
         print(dataset2)
 
         salida = loaded_model.predict(dataset2[:, 0:24])
-        i,j = numpy.unravel_index(salida.argmax(), salida.shape)
+        i, j = numpy.unravel_index(salida.argmax(), salida.shape)
         print("==============================")
         print("==============================")
         print("salida:")
@@ -385,7 +385,7 @@ def categoriaNSE(nivel):
         5: "C2",
         6: "C1",
         7: "AB"
-    }.get(nivel,"error")
+    }.get(nivel, "error")
 
 
 win = ListBoxWindow()
