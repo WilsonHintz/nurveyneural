@@ -1,17 +1,17 @@
 deploy_to_heroku:
   stage: deploy
-  image: 'docker:latest'
+  image: docker:latest
   variables:
     DOCKER_DRIVER: overlay
   services:
-    - 'docker:dind'
+    - docker:dind
   before_script:
-    - 'apk add git --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/'
-    - 'apk add openssl --update-cache'
-    - 'wget -qO- https://github.com/git-lfs/git-lfs/releases/download/v2.1.1/git-lfs-linux-amd64-2.1.1.tar.gz | tar xz'
-    - 'mv git-lfs-*/git-lfs /usr/bin/ && rm -rf git-lfs-* && git lfs install && git lfs pull'
+    - apk add git --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/
+    - apk add openssl --update-cache
+    - wget -qO- https://github.com/git-lfs/git-lfs/releases/download/v2.1.1/git-lfs-linux-amd64-2.1.1.tar.gz | tar xz
+    - mv git-lfs-*/git-lfs /usr/bin/ && rm -rf git-lfs-* && git lfs install && git lfs pull
   script:
-    - 'git lfs pull'
+    - git lfs pull
     - 'docker login --username=guillermohintz@gmail.com --password=$HEROKU_AUTH_TOKEN registry.heroku.com'
     - 'docker build -f Dockerfile --iidfile imageid.txt -t registry.heroku.com/nurveyneuralrest/web .'
     - 'docker push registry.heroku.com/nurveyneuralrest/web'
