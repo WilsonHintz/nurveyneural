@@ -1,24 +1,21 @@
 deploy_to_heroku:
   stage: deploy
-  image: docker:latest
+  image: 'docker:latest'
   variables:
     DOCKER_DRIVER: overlay
   services:
-  - docker:dind
+    - 'docker:dind'
   before_script:
-    - apk add git --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/
-    # Install git-lfs
-    - apk add openssl --update-cache
-    - wget -qO- https://github.com/git-lfs/git-lfs/releases/download/v2.1.1/git-lfs-linux-amd64-2.1.1.tar.gz | tar xz
-    - mv git-lfs-*/git-lfs /usr/bin/ && rm -rf git-lfs-* && git lfs install && git lfs pull
+    - 'apk add git --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/'
+    - 'apk add openssl --update-cache'
+    - 'wget -qO- https://github.com/git-lfs/git-lfs/releases/download/v2.1.1/git-lfs-linux-amd64-2.1.1.tar.gz | tar xz'
+    - 'mv git-lfs-*/git-lfs /usr/bin/ && rm -rf git-lfs-* && git lfs install && git lfs pull'
   script:
-    - git lfs pull
-    # Login to Heroku registry
-    - docker login --username=guillermohintz@gmail.com --password=$HEROKU_AUTH_TOKEN registry.heroku.com
-    # Build the docker image locally
-    - docker build -f Dockerfile --iidfile imageid.txt -t registry.heroku.com/nurveyneuralrest/web .
-    # Push docker image to Heroku registry to serve
-    - docker push registry.heroku.com/nurveyneuralrest/web    
-    - apk add --no-cache curl
-    - echo "Docker Image ID is $(cat imageid.txt)"
-    - curl -X PATCH https://api.heroku.com/apps/nurveyneuralrest/formation --header "Content-Type: application/json" --header "Accept: application/vnd.heroku+json; version=3.docker-releases" --header "Authorization: Bearer ${HEROKU_TOKEN}" --data '{ "updates": [ { "type": "web", "docker_image": "'$(cat imageid.txt)'" } ] }'
+    - 'git lfs pull'
+    - 'docker login --username=guillermohintz@gmail.com --password=$HEROKU_AUTH_TOKEN registry.heroku.com'
+    - 'docker build -f Dockerfile --iidfile imageid.txt -t registry.heroku.com/nurveyneuralrest/web .'
+    - 'docker push registry.heroku.com/nurveyneuralrest/web'
+    - 'apk add --no-cache curl'
+    - 'echo "Docker Image ID is $(cat imageid.txt)"'
+    -
+      '|- curl -X PATCH https://api.heroku.com/apps/nurveyneuralrest/formation --header "Content-Type': 'application/json" --header "Accept: application/vnd.heroku+json; version=3.docker-releases" --header "Authorization: Bearer ${HEROKU_TOKEN}" --data ''{ "updates": [ { "type": "web", "docker_image": "''$(cat imageid.txt)''" } ] }'''
