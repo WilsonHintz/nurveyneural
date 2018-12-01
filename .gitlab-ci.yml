@@ -14,12 +14,13 @@ deploy_to_heroku:
   script:
     - git lfs pull
     # Login to Heroku registry
-    - docker login --username=_ --password=$HEROKU_AUTH_TOKEN registry.heroku.com
+    - docker login --username=guillermohintz@gmail.com --password=$HEROKU_AUTH_TOKEN registry.heroku.com
     # Build the docker image locally
     - docker build -t registry.heroku.com/nurveyneuralrest/web .
     # Push docker image to Heroku registry to serve
     - docker push registry.heroku.com/nurveyneuralrest/web
+    - heroku container:release web --app=nurveyneuralrest
     ### Push to Gitlab registry
     #- docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
-    - docker build -t registry.gitlab.com/wilsonhintz/nurveyneural .
-    - docker push registry.gitlab.com/wilsonhintz/nurveyneural
+    #- docker build -t registry.gitlab.com/wilsonhintz/nurveyneural .
+    #- docker push registry.gitlab.com/wilsonhintz/nurveyneural
