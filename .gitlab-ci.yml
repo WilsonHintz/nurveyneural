@@ -5,6 +5,7 @@ deploy_to_heroku:
     DOCKER_DRIVER: overlay
   services:
     - docker:dind
+    - python:alpine
   before_script:
     - apk add git --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/
     - apk add openssl --update-cache
@@ -12,10 +13,8 @@ deploy_to_heroku:
     - mv git-lfs-*/git-lfs /usr/bin/ && rm -rf git-lfs-* && git lfs install && git lfs pull
   script:
     - git lfs pull
-    - docker login --username=guillermohintz@gmail.com --password=$HEROKU_AUTH_TOKEN registry.heroku.com
+    - docker login --username=_ --password=$HEROKU_AUTH_TOKEN registry.heroku.com
     - docker build -f Dockerfile --iidfile imageid.txt -t registry.heroku.com/nurveyneuralrest/web .
     - docker push registry.heroku.com/nurveyneuralrest/web
-    - apk add --no-cache curl
     - echo "Docker Image ID is $(cat imageid.txt)"
-    -
-      '|- curl -X PATCH https://api.heroku.com/apps/nurveyneuralrest/formation --header "Content-Type': 'application/json" --header "Accept: application/vnd.heroku+json; version=3.docker-releases" --header "Authorization: Bearer ${HEROKU_TOKEN}" --data ''{ "updates": [ { "type": "web", "docker_image": "''$(cat imageid.txt)''" } ] }'
+    - docker run --rm -e HEROKU_AUTH_TOKEN=$HEROKU_AUTH_TOKEN wingrunr21/alpine-heroku-cli container:release web --app nurveyneuralrest
