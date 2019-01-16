@@ -1,6 +1,6 @@
 import numpy
 from flask import Flask
-from flask import request
+from flask import request, jsonify
 from keras.models import model_from_json
 
 app = Flask(__name__)
@@ -24,8 +24,10 @@ def postJsonHandler():
     print("categoria")
     categoriaNSE(j)
     print(categoriaNSE(j))
+    data = {'Categoria': categoriaNSE(j)}
 
-    return 'Categoria ' + categoriaNSE(j)
+    #return 'Categoria ' + categoriaNSE(j)
+    return jsonify(data), 200
 
 
 def categoriaNSE(nivel):
@@ -56,4 +58,4 @@ if __name__ == "__main__":
     # start the web server
     print("* Starting web service...")
     loadModel()
-    app.run(host='192.168.0.140', port=5000, debug=False, threaded=False)
+    app.run(host='0.0.0.0', port=5000, debug=False, threaded=False)
