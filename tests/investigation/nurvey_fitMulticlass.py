@@ -30,7 +30,7 @@ model.add(Dense(12, activation='relu'))
 model.add(Dense(8, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-history = model.fit(X, dummy_y, validation_split=0.30, epochs=20, batch_size=7, verbose=1)
+history = model.fit(X, dummy_y, validation_split=0.35, epochs=250, batch_size=10, verbose=1)
 
 # list all data in history
 print(history.history.keys())
