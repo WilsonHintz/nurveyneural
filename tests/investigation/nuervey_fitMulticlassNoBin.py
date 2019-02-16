@@ -12,7 +12,7 @@ numpy.random.seed(seed)
 # load dataset
 # dataframe = pandas.read_csv("nurvey.csv", header=None)
 # dataset = dataframe.values
-dataset = numpy.loadtxt('nurveyNoBin7214.csv', delimiter=',')
+dataset = numpy.loadtxt('LOLASO.txt', delimiter=',')
 X = dataset[:, 0:14]
 Y = dataset[:, 14]
 
@@ -24,9 +24,10 @@ encoded_Y = encoder.transform(Y)
 dummy_y = np_utils.to_categorical(encoded_Y)
 
 model = Sequential()
-model.add(Dense(24, input_dim=24, activation='relu'))
-model.add(Dense(12, activation='relu'))
-model.add(Dense(12, activation='relu'))
+model.add(Dense(14, input_dim=14, activation='relu'))
+model.add(Dense(100, activation='relu'))
+model.add(Dense(100, activation='relu'))
+model.add(Dense(50, activation='relu'))
 model.add(Dense(8, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
