@@ -43,13 +43,13 @@ def categoriaNSE(nivel):
     }.get(nivel, "error")
 
 def loadModel():
-    json_file = open('./models/model.json', 'r')
+    json_file = open('./models/modelNoBin.json', 'r')
     loaded_model_json = json_file.read()
     json_file.close()
     global loaded_model
     loaded_model = model_from_json(loaded_model_json)
     # load weights into new model
-    loaded_model.load_weights("./models/model.h5")
+    loaded_model.load_weights("./models/modelNoBin.h5")
 
     print("Loaded model from disk")
 

@@ -25,13 +25,20 @@ dummy_y = np_utils.to_categorical(encoded_Y)
 
 model = Sequential()
 model.add(Dense(14, input_dim=14, activation='relu'))
-model.add(Dense(100, activation='relu'))
-model.add(Dense(100, activation='relu'))
-model.add(Dense(50, activation='relu'))
+model.add(Dense(80, activation='relu'))
+model.add(Dense(18, activation='relu'))
 model.add(Dense(8, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-history = model.fit(X, dummy_y, validation_split=0.30, epochs=20, batch_size=7, verbose=1)
+history = model.fit(X, dummy_y, validation_split=0.20, epochs=500, batch_size=15, verbose=1)
+
+# serialize model to JSON
+model_json = model.to_json()
+with open("modelNoBin.json", "w") as json_file:
+    json_file.write(model_json)
+# serialize weights to HDF5
+model.save_weights("modelNoBin.h5")
+print("Saved model to disk")
 
 # list all data in history
 print(history.history.keys())
